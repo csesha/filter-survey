@@ -138,9 +138,9 @@ meaning we want to quickly compute $g(x)$ (for $x \in D$) without constructing $
 is defined as an algorithm $A$ satisfying the following properties.
 Assume oracle access to function $f:D \mapsto R$, with such an access called a \emph{lookup}.
 The filter takes
-as input an auxiliary random seed $\rho$ and $x \in \Gamma$.  
+as input an auxiliary random seed $\rho$ and $x \in D$.  
 For fixed $f, \rho$, $A$ runs deterministically on input $x$ to produce an output $A_{f,\rho}(x)$.
-Note that $A_{f,\rho}$ specifies a function on domain $D$, which is the representation of the desired function $g$.
+Note that $A_{f,\rho}$ specifies a function on domain $D$, which will be the desired function $g$.
 
 \begin{enumerate}
 \item \label{prop:1} For each $f$ and $\rho$,  $A_{f,\rho}$ 
@@ -158,19 +158,19 @@ Conditions~\ref{prop:3} and~\ref{prop:4} typically demand that the lookup comple
 seed lengths are $o(|D|)$ (sometimes we desire them to be $\poly(\log |D|)$ or even constant). 
 
 
-
-
-in an \emph{online} manner. Suppose $f$ is a sorted array of numbers on which we wish to perform
-binary search. Because of various errors, $f$ is not sorted, so we instead would need to 
-perform the search on a sorted array $g$ (that is close to $f$). To perform binary search, we only
-need query access to $g$, which does not require constructing $g$ all at once.
-%These considerations motivated the \emph{online reconstruction model} of~\cite{ACCL}.
+%
+%
+%in an \emph{online} manner. Suppose $f$ is a sorted array of numbers on which we wish to perform
+%binary search. Because of various errors, $f$ is not sorted, so we instead would need to 
+%perform the search on a sorted array $g$ (that is close to $f$). To perform binary search, we only
+%need query access to $g$, which does not require constructing $g$ all at once.
+%%These considerations motivated the \emph{online reconstruction model} of~\cite{ACCL}.
 
 
 \subsection{Connections with other models}
 
 
-The notion of online reconstruction through filters was first proposed by Ailon et al in~\cite{ACCL2},
+The notion of reconstruction through filters was first proposed by Ailon et al in~\cite{ACCL2},
 though the requirements were less stringent. There is a sequence $x_1, x_2, \ldots$ of domain points generated
 online. Given $x_i$, the filter outputs value $g(x_i)$. 
 The filter is allowed to store previous outputs to ensure consistency. This is a major drawback.
@@ -211,10 +211,10 @@ having the property.
 
 \KeyRes
 
-Over the past decade, there have been numerous results on local filtering,
+Over the past decade, there have been numerous results on local reconstruction,
 over a variety of domains. 
 
-{\bf Monotonicity:} The most well-studied property for local filtering
+{\bf Monotonicity:} The most well-studied property for local reconstruction
 is that of monotonicity~\cite{ACCL2,SS06,BhGr+12,AwJh+12}. Consider $f:[n]^d \mapsto \RR$. The domain
 is equipped with a natural coordinate-wise partial ordering, so $x \prec y$
 if all coordinates of $x$ are less than those of $y$. A function $f$
@@ -229,7 +229,7 @@ is relaxed quite heavily~\cite{AwJh+12}.
 
 {\bf Lipschitz continuity:} A function $f:[n]^d \mapsto \RR$ is $c$-Lipschitz
 if for $x,y$, $|f(x) - f(y)| \leq c\|x-y\|_1$. This is a fundamental property
-of functions and appears in functional analysis, statistics, optimization, etc.
+of functions and appears in functional analysis, statistics, and optimization.
 Recently, Lipschitz continuity was studied from a property testing perspective by Jha and Raskhodnikova~\cite{JhRa13}.
 Most relevant to this essay, they gave an application of local Lipschitz filters
 for differential privacy. The guarantees on their filter are analogous to monotonicity
@@ -250,11 +250,11 @@ A graph is $k$-(edge) connected if every subset of vertices has at least $k$ edg
 Campagna, Guo, and Rubinfeld provide reconstructors for this property, using an intricate
 recursion over $k$~\cite{CaGuRu13}. They also give filters for the low diameter property.
 Another connectivity property of great interest is that of \emph{expansion}.
-Roughly speaking, a bounded-degree expander has the property that for any subset $S$ of vertices, there
+Roughly speaking, a bounded-degree expander has the property that for any subset $S$ of at most half the vertices, there
 are at least $\Omega(|S|)$ edges leaving $S$.
 Local reconstructors for expansion were given by Kale and Seshadhri~\cite{KalS11-j}.
 
-{\bf Convexity in 2,3-dimensions:} Convexity is an important geometric property, and 
+{\bf Convexity in 2,3-dimensions:} 
 Chazelle and Seshadhri studied reconstruction in the geometric setting~\cite{ChSe11-j}. They focus
 on convex polygon and 3D convex polytope reconstruction. These results were in the online filter
 setting of~\cite{ACCL2}, though their 3D result is basically a local filter. 
@@ -266,11 +266,11 @@ Given the breadth of this area, we cannot hope to give a good summary of open pr
 we make a few suggestions.
 
 {\bf The curse of dimensionality for monotonicity:} Much work has gone into understanding local filters
-for monotonicity, but there is not idea on how to remove the exponential dependence on $d$.
+for monotonicity, but it is not clear how to remove the exponential dependence on $d$.
 There are numerous lower bounds of $(\log n)^{\Omega(d)}$, but they all rely on a specific form for Property~\ref{prop:2}.
-Namely, when $f$ is monotone, $\dist(f,g)$ must be zero. (There is one exception, where the filter is allowed
-bounded perturbations, but the lower bound remains.) Can we find a reasonable setting of filters where
-a $\poly(d,\log n)$ lookup complexity is possible? One possibility is requiring some ``additive error".
+All these forms require when $f$ is monotone, $\dist(f,g)$ must be zero. (There is one exception, where the filter is allowed
+bounded perturbations, but the lower bound remains~\cite{AwJh+12}.) Can we find a reasonable setting for filters where
+a $\poly(d,\log n)$ lookup complexity is possible? One possibility is requiring only ``additive error".
 For some parameter $\delta > 0$, we only want $|\dist(f,g) - \dist(f,\cP)| \leq \delta$. Is there a filter
 with lookup complexity $\poly(d,\log n,1/\delta)$?
 
@@ -278,7 +278,7 @@ with lookup complexity $\poly(d,\log n,1/\delta)$?
 A local filter would implicitly represent a close enough convex function to an input non-convex function,
 which would be extremely useful for (say) minimization. For this application, it would be essential
 to handle high-dimensional functions. Unfortunately, there are no known property testers for convexity in this setting,
-so designing local filters is far away goal.
+so designing local filters is a far away goal.
 
 {\bf Filters for properties on bounded-degree graphs:} The large class of minor-closed properties (such as planarity)
 is known to be testable for bounded-degree graphs~\cite{BSS08}. Can we get local filters for this property? This appears to 
