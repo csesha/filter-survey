@@ -1,0 +1,399 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%% example.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% sample input file for your contribution to Springer ENCYCLOPEDIAs
+%
+% Use this file as a template for your own input.
+%
+%%%%%%%%%%%%%%%%%%%%%%%% Springer-Verlag %%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% RECOMMENDED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[natbib]{svcyclop}
+
+% \documentclass[natbib]{svcyclop}
+% call for the natbib-system if you wish to have sophisticated citations,
+% remember to adapt the references at the end of your contribution then
+% see explanation at the end of this file.
+%
+% A detailed explanation and demonstration of the natbib system can
+% be found at
+%     http://merkel.zoneo.net/Latex/natbib.php
+%
+% If you use BibTeX to manage your citation use the style "spbasic.bst"
+% that is "natbib" aware.
+
+\usepackage{graphicx}    % standard LaTeX graphics tool
+                         % when including figure files
+
+\usepackage{amsfonts,amsmath} % typesetting complicated math
+
+% Hint:
+% Use the "hyperref" package in the preamble
+% if you want to supply active links within
+% your text; e.g. at the \CrossRef section
+\usepackage{hyperref}
+
+% Hint:
+% Use the package "url" in the preamble
+% to avoid problems with special characters
+% used in your e-mail or web address in the
+% \author or the \institute field below
+\usepackage{url}
+\urlstyle{tt}
+
+\input{preamble}
+
+\def\dist{{\sf dist}}
+
+
+% etc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+% Please specify your Entry Title in one continuous line
+\title{Local reconstruction}
+
+% Please specify the Names of Entry Author(s)
+\author{C. Seshadhri\inst{1}}
+% if there is more than one author, use "\and" in between
+% the particular author lines
+%
+% add "\inst{<No.>}" directly after the author name to indicate
+% the mapping to the relevant affiliations/addresses in the
+% forthcoming "\institute" field
+%
+% see also the example contribution file "example.tex" for detailed info
+
+% Please specify your Address/Affiliation and use "\\" as EOL for structuring
+% specify Phone / Fax / e-mail if applicable, use "\\" as EOL for structuring
+% more than one address/affiliation? separate each two entries with
+% a line containing "\and"
+\institute{
+Sandia National Laboratories,
+Livermore, CA, USA}
+% make sure to give at least as many institute addresses
+% as the mapping to the authors requires;
+% the numbering is done automatically by the "\and" command
+% see also the example contribution file "example.tex" for detailed info
+
+% Please specify Years and Authors of Summarized Original Work
+% use one continuous line for each paper; use semicolon to separate
+% the year from the last names; don't use "and" between author names
+% adhere to the following format:
+% "Year of paper"; "last names of authors" separated by commas without "and"
+% use "\\" as EOL for structuring
+\sumoriwork{
+2010; Saks, Seshadhri}
+% see also the example contribution file "example.tex"
+% for detailed information
+%
+
+% Please specify the Keywords - use semicolon for separation
+\keywords{Property testing; sublinear algorithms; data reconstruction}
+
+\maketitle  % completes, checks, and typesets the contribution's head
+
+% you have 7 predefined headings at hand you can use throughout your contribution;
+% just call the relevant commands instead of generating a new "\section" for them;
+% the next two headings are mandatory:
+% \ProbDef   -   Problem Definition
+% \KeyRes    -   Key Results
+%
+% the following heading commands may be used as and when required:
+% \Applic    -   Applications
+% \OpenProb  -   Open Problems
+% \ExpRes    -   Experimental Results
+% \DataSets  -   URLs to Code and Data Sets
+% \CrossRef  -   Cross References
+
+
+\ProbDef
+
+Consider some massive dataset represented as a function $f: D \mapsto R$,
+where $D$ is discrete.
+This dataset could be as varied as an array of numbers, a graph, a matrix, or a general high-dimensional function.
+Any dataset assembled in the real-world is useful because it possesses some 
+properties of interest. So an array might be sorted; a graph might be 
+connected; a matrix might be orthogonal; a function might be convex. These properties are critical to the use
+of the dataset. Yet, due the unavoidable errors (say, in storing the dataset), these
+properties might not hold any longer. For example, a sorted array could become unsorted because of roundoff errors.
+
+Can we find a function $g: D \mapsto R$ that satisfies the property and is ``sufficiently close"
+to $f$? Let us formalize this question. Let $\cP$ denote a property, which we define as a some subset
+of functions. We define a \emph{distance} between functions, $\dist(f,g) = |\{x | f(x) \neq g(x)\}|/|D|$. In words, this is the fraction
+of domain points where $f$ and $g$ differ (the Hamming distance). This definition naturally extends to properties,
+so $\dist(f,\cP) = \min_{h \in \cP} \dist(f,h)$. This is the minimum amount of change $f$
+must suffer to have property $\cP$.
+Our aim is to construct $g \in \cP$ such that $\dist(f,g)$ is ``small". The latter can be quantified
+by comparing with the baseline, $\dist(f,\cP)$.
+
+
+The standard \emph{offline reconstruction} problem involves explicitly constructing $g$ given $f$.
+But this is prohibitively expensive if $f$ is a large dataset. Instead, we wish to \emph{locally} construct $g$,
+meaning we want to quickly compute $g(x)$ (for $x \in D$) without constructing $g$ completely.
+
+{\bf Local filters~\cite{SS06}:} A {\em local filter} for property ${\cal P}$
+is defined as an algorithm $A$ satisfying the following properties.
+Assume oracle access to function $f:D \mapsto R$, with such an access called a \emph{lookup}.
+The filter takes
+as input an auxiliary random seed $\rho$ and $x \in \Gamma$.  
+For fixed $f, \rho$, $A$ runs deterministically on input $x$ to produce an output $A_{f,\rho}(x)$.
+Note that $A_{f,\rho}$ specifies a function on domain $D$, which is the representation of the desired function $g$.
+
+\begin{enumerate}
+\item \label{prop:1} For each $f$ and $\rho$,  $A_{f,\rho}$ 
+satisfies $\mathcal{P}$ with probability $1$. 
+\item \label{prop:2} For each $f$, with high probability over $\rho$, the function $A_{f,\rho}$ is suitably
+close to $f$.
+\item \label{prop:3} For each $x$, $A_{f,\rho}(x)$ can be computed with very few lookups.
+\item \label{prop:4} The size of the random seed $\rho$ should be much smaller than $D$.
+\end{enumerate}
+
+Let $g$ be $A_{f,\rho}$.
+Condition~\ref{prop:2} can be formalized in numerous ways. The most common is to demand that $\dist(f,g) \leq c\cdot \dist(f,\cP)$,
+where $c$ is a fixed constant. Sometimes, we require this only when $\dist(f,\cP)$ is extremely small (or even zero). 
+Conditions~\ref{prop:3} and~\ref{prop:4} typically demand that the lookup complexity and random
+seed lengths are $o(|D|)$ (sometimes we desire them to be $\poly(\log |D|)$ or even constant). 
+
+
+
+
+in an \emph{online} manner. Suppose $f$ is a sorted array of numbers on which we wish to perform
+binary search. Because of various errors, $f$ is not sorted, so we instead would need to 
+perform the search on a sorted array $g$ (that is close to $f$). To perform binary search, we only
+need query access to $g$, which does not require constructing $g$ all at once.
+%These considerations motivated the \emph{online reconstruction model} of~\cite{ACCL}.
+
+
+\subsection{Connections with other models}
+
+
+The notion of online reconstruction through filters was first proposed by Ailon et al in~\cite{ACCL2},
+though the requirements were less stringent. There is a sequence $x_1, x_2, \ldots$ of domain points generated
+online. Given $x_i$, the filter outputs value $g(x_i)$. 
+The filter is allowed to store previous outputs to ensure consistency. This is a major drawback.
+First, the storage of all previous queries and answers is a massive space overhead. Second,
+different runs of the filter construct different $g$'s (because the filter is randomized).
+So we cannot instantiate multiple copies of filter to handle queries independently and consistently.
+Saks and Seshadhri~\cite{SS06} defined local filters to address these issues.
+
+Independent of this line of work, Brakerski defined \emph{local restorers}~\cite{Br08}, which are basically
+equivalent to filters with an appropriate setting of Conditions~\ref{prop:1} and~\ref{prop:2}.
+A major generalization of filters, called \emph{local computation algorithms}, was subsequently proposed
+by Rubinfeld et al~\cite{RuTaVa+11}. This model considers computation on a large input (like $f$) where the output itself
+is large. (For example, one may want a maximal independent set of a massive graph.) 
+The aim is to locally compute the output, by an algorithm akin to a filter.
+
+Depending on how Property~\ref{prop:2} is instantiated, filters
+can easily be used for tolerant testing and distance approximation~\cite{PRR04}. If the filter ensures
+that $\dist(f,g)$ is comparable to $\dist(f,\cP)$, then it suffices to estimate $\dist(f,g)$
+for distance approximation. 
+%
+%Given $f$,
+%we wish to get an approximation of $\dist(f,\cP)$ in sublinear time (or given $\eps$, just tell if $\dist(f,\cP) > \eps$).
+%Because of Property~\ref{prop:2}, it suffices to just estimate $\dist(f,A_{f,\rho})$ to approximate $\dist(f,\cP)$.
+
+A special case of local reconstruction that has received extensive attention is decoding of error correcting codes. 
+Here, $f$ is some string, and $\cP$ is the set of all valid codewords. 
+The problem considered for local filters (like sorted arrays)
+are qualitatively different from local decoding examples.
+In local decoding there is either \emph{one} correct output, or 
+sparse list of possible correct outputs. For general properties,
+there may be many (possibly infinitely many) ways
+to construct a valid reconstruction $g$. This creates challenges
+for designing filters. Once the random seed is fixed, all query answers
+provided by the filter must be consistent with a {\em single} function
+having the property.
+
+
+
+\KeyRes
+
+Over the past decade, there have been numerous results on local filtering,
+over a variety of domains. 
+
+{\bf Monotonicity:} The most well-studied property for local filtering
+is that of monotonicity~\cite{ACCL2,SS06,BhGr+12,AwJh+12}. Consider $f:[n]^d \mapsto \RR$. The domain
+is equipped with a natural coordinate-wise partial ordering, so $x \prec y$
+if all coordinates of $x$ are less than those of $y$. A function $f$
+is monotone if: $\forall x \prec y$, $f(x) \prec f(y)$. When $d=1$,
+monotone functions are exactly sorted arrays.
+
+Most initial work on local filters focused exclusively on monotonicity.
+There exists a filter of running
+time $(\log n)^{O(d)}$ with $\dist(f,g) \leq 2^{O(d)}\dist(f,\cP)$~\cite{SS06}.
+There are matching lower bounds that are extremely strong; even when Condition~\ref{prop:2}
+is relaxed quite heavily~\cite{AwJh+12}.
+
+{\bf Lipschitz continuity:} A function $f:[n]^d \mapsto \RR$ is $c$-Lipschitz
+if for $x,y$, $|f(x) - f(y)| \leq c\|x-y\|_1$. This is a fundamental property
+of functions and appears in functional analysis, statistics, optimization, etc.
+Recently, Lipschitz continuity was studied from a property testing perspective by Jha and Raskhodnikova~\cite{JhRa13}.
+Most relevant to this essay, they gave an application of local Lipschitz filters
+for differential privacy. The guarantees on their filter are analogous to monotonicity
+(with a weaker form of Property~\ref{prop:2}). Again, matching upper and lower bounds
+are known~\cite{JhRa13,AwJh+12-2}.
+
+{\bf Dense graph properties:} Dense graphs are commonly studied in property testing, where
+the input is given as a binary adjacency matrix. Brakerski's work on local restorers provides
+filters for bipartiteness and clique. Large classes are dense graphs are known
+to tolerant testable. These results have been extended to local filters
+for hypergraph properties by Austin and Tao~\cite{AT09}. This work was developed quite independently
+of all the previous work on filters, and their algorithms are called ``repair"
+algorithms.
+
+{\bf Connectivity properties of sparse graphs:} In the sparse graph setting, the input $G$
+is an adjacency list of a bounded degree graph. A fundamental graph property is that of $k$-connectivity.
+A graph is $k$-(edge) connected if every subset of vertices has at least $k$ edges leaving the set.
+Campagna, Guo, and Rubinfeld provide reconstructors for this property, using an intricate
+recursion over $k$~\cite{CaGuRu13}. They also give filters for the low diameter property.
+Another connectivity property of great interest is that of \emph{expansion}.
+Roughly speaking, a bounded-degree expander has the property that for any subset $S$ of vertices, there
+are at least $\Omega(|S|)$ edges leaving $S$.
+Local reconstructors for expansion were given by Kale and Seshadhri~\cite{KalS11-j}.
+
+{\bf Convexity in 2,3-dimensions:} Convexity is an important geometric property, and 
+Chazelle and Seshadhri studied reconstruction in the geometric setting~\cite{ChSe11-j}. They focus
+on convex polygon and 3D convex polytope reconstruction. These results were in the online filter
+setting of~\cite{ACCL2}, though their 3D result is basically a local filter. 
+
+\OpenProb
+
+For any property tester, one can always ask if the associated property has a local filter.
+Given the breadth of this area, we cannot hope to give a good summary of open problems. Nonetheless,
+we make a few suggestions.
+
+{\bf The curse of dimensionality for monotonicity:} Much work has gone into understanding local filters
+for monotonicity, but there is not idea on how to remove the exponential dependence on $d$.
+There are numerous lower bounds of $(\log n)^{\Omega(d)}$, but they all rely on a specific form for Property~\ref{prop:2}.
+Namely, when $f$ is monotone, $\dist(f,g)$ must be zero. (There is one exception, where the filter is allowed
+bounded perturbations, but the lower bound remains.) Can we find a reasonable setting of filters where
+a $\poly(d,\log n)$ lookup complexity is possible? One possibility is requiring some ``additive error".
+For some parameter $\delta > 0$, we only want $|\dist(f,g) - \dist(f,\cP)| \leq \delta$. Is there a filter
+with lookup complexity $\poly(d,\log n,1/\delta)$?
+
+{\bf Filters for convexity:} Filters for convexity could have a great impact on optimization.
+A local filter would implicitly represent a close enough convex function to an input non-convex function,
+which would be extremely useful for (say) minimization. For this application, it would be essential
+to handle high-dimensional functions. Unfortunately, there are no known property testers for convexity in this setting,
+so designing local filters is far away goal.
+
+{\bf Filters for properties on bounded-degree graphs:} The large class of minor-closed properties (such as planarity)
+is known to be testable for bounded-degree graphs~\cite{BSS08}. Can we get local filters for this property? This appears to 
+be a very challenging question, since even approximating the distance to planarity is a difficult problem.
+Nonetheless, the right relaxations of filter conditions could lead to positive results for filters.
+
+%% BibTeX users please use
+\bibliographystyle{spbasic}
+\bibliography{filter-survey}
+%\end{document}
+%
+% Non-BibTeX users please use
+%\begin{thebibliography}{8.}
+%
+% and use \bibitem to create references.
+%
+% Use the following syntax and markup for your references
+%
+
+
+%% Complete Book
+%\bibitem{book} Faber K (1997) Biotransformations in organic
+%chemistry, 3rd edn. Springer, Berlin Heidelberg New York
+%
+%% Contributions, Chapters or Sections in Books
+%\bibitem{contribution} Brown FR, Jackson D (1987) Analytical chemistry.
+%In: Whie FC, Red SA (eds) Modern chemistry. Springer, Berlin Heidelberg
+%New York, p 220
+%
+%% Journal
+%\bibitem{journal}
+%Fuchigami T (1994) Top Curr Chem 170:25
+%
+%% Other Possibilities
+%\bibitem{Other} Tanzawa H (1986) First Japan-US workshop on Biomedical
+%Polymer Science. Kyoto, Japan
+%
+%\end{thebibliography}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%\end{document}
+
+% here a faked reference section follows working with the natbib-system
+% allowing for author-year citation without automated BibTeX usage
+
+% Non-BibTeX users please use
+
+%\begin{thebibliography}{12}
+%%
+%% and use \bibitem to create references. Consult the Instructions
+%% for authors for reference list style.
+%
+%\bibitem[{{Alpert} et~al.(1998){Alpert}, {Chan}, {Kahng}, {Markov},
+%{Mulet}}]{AlpChKaMaMu98} {Alpert} CJ,
+%{Chan} T, {Kahng} AB, {Markov} IL, {Mulet} P (1998) Faster
+%minimization of linear wirelength for global placement. IEEE
+%Trans. CAD 17(1), 3-13
+%
+%\bibitem[{{Caldwell} et~al.(2000){Caldwell}, {Kahng},
+%{Markov}}]{CalKahMar00} {Caldwell} AE, {Kahng} AB, {Markov} IL (2000)
+%Optimal partitioners and end-case placers for standard-cell layout.
+%IEEE Trans. CAD 19(11), 1304-1314
+%
+%\bibitem[{{Chan} et~al.(2005){Chan}, {Cong}, {Sze}}]{ChaConSze05}
+%{Chan} T, {Cong} J, {Sze} K (2005) Multilevel generalized force-directed
+%method for circuit placement. Proc. Intl. Symp. Physical Design.
+%ACM Press, San Francisco, 3-5 Apr 2005. pp. 185-192
+%
+%\bibitem[{{Ausiello} et~al.(1998)
+%{Ausiello}, {Crescenzi}, {Gambosi}, {Kann}, {Marchetti-Spaccamela},
+%{Protasi}}] {CGKMSP98} {Ausiello} G, {Crescenzi} P, {Gambosi} G,
+%{Kann} V, {Marchetti-Spaccamela} A, {Protasi} M (1998) Complexity and
+%Approximation: Combinatorial optimization problems and their
+%approximability properties. Springer
+%
+%\bibitem[{{Hu} et~al.(2005){Hu}, {Marek-Sadowska}}]{HuMar05}
+%{Hu} B, {Marek-Sadowska} M (2005) Multilevel fixed-point-additionbased
+%VLSI placement. IEEE Trans. CAD 24(8), 1188-1203
+%
+%\bibitem[{{Kahng} et~al.(2005){Khang}, {Wang}}]{KhaWan05}
+%{Kahng} AB, {Wang} Q (2005) Implementation and extensibility of an
+%analytic placer. IEEE Trans. CAD 24(5), 734-747
+%
+%\bibitem[{{Kennings} et~al.(2002){Kennings}, {Markov}}]{KenMar02}
+%{Kennings} A, {Markov} IL (2002) Smoothingmax-terms and analytical
+%minimization of half-perimeter wirelength. VLSI Design 14(3),
+%229-237
+%
+%\bibitem[{{Kennings} et~al.(2006){Kennings}, {Vorwerk}}]{KenVor06}
+%{Kennings} A, {Vorwerk} K (2006) Force-directed methods for generic
+%placement. IEEE Trans. CAD 25(10), 2076-2087
+%
+%\bibitem[{{Papa} et~al.(2007){Papa}, {Markov}}]{PapMar07}
+%{Papa} DA, {Markov} IL (2007) Hypergraph partitioning and clustering.
+%In: Gonzalez, T. (ed.) Handbook of algorithms. Taylor \&
+%Francis Group, Boca Raton, CRC Press, pp. 61-1
+%
+%\bibitem[{{Reda} et~al.(2006){Reda}, {Chowdhary}}]{RedCho06} {Reda} S,
+%{Chowdhary} A (2006) Effective linear programming based
+%placement methods. In: ACM Press, San Jose, 9-12 Apr
+%
+%\bibitem[{{Roy} et~al.(2006){Roy}, {Adya}, {Papa}, {Markov}}]{RoyAdyPapMar06}
+%{Roy} JA, {Adya} SN, {Papa} DA, {Markov} IL(2006) Min-cut floorplacement.
+%IEEE Trans. CAD 25(7), 1313-1326
+%
+%\bibitem[{{Tang} et~al.(2005){Tang}, {Tian}, {Wong}}]{TanTiaWon05}
+%{Tang} X, {Tian} R, {Wong} MDF (2005) Optimal redistribution of white
+%space for wirelength minimization. In: Tang, T.-A. (ed.) Proc.
+%Asia South Pac. Design Autom. Conf., ACM Press, 18-21 Jan
+%2005, Shanghai. pp. 412-417
+%
+%\end{thebibliography}
+%
+\end{document}
+% end of file "example.tex"
+
+
