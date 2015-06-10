@@ -31,7 +31,7 @@
 % Use the "hyperref" package in the preamble
 % if you want to supply active links within
 % your text; e.g. at the \CrossRef section
-\usepackage{hyperref}
+% \usepackage{hyperref}
 
 % Hint:
 % Use the package "url" in the preamble
@@ -125,7 +125,7 @@ of the dataset. Yet, due to unavoidable errors (say, in storing the dataset), th
 properties might not hold any longer. For example, a sorted array could become unsorted because of roundoff errors.
 
 Can we find a function $g: D \mapsto R$ that satisfies the property and is ``sufficiently close"
-to $f$? Let us formalize this question. Let $\cP$ denote a property, which we define as a some subset
+to $f$? Let us formalize this question. Let $\cP$ denote a property, which we define as a subset
 of functions. We define a \emph{distance} between functions, $\dist(f,g) = |\{x | f(x) \neq g(x)\}|/|D|$. In words, this is the fraction
 of domain points where $f$ and $g$ differ (the relative Hamming distance). This definition naturally extends to properties:
 $\dist(f,\cP) = \min_{h \in \cP} \dist(f,h)$. This is the minimum amount of change $f$ must undergo to have property $\cP$.
@@ -138,7 +138,7 @@ But this is prohibitively expensive if $f$ is a large dataset. Instead, we wish 
 meaning we want to quickly compute $g(x)$ (for $x \in D$) without constructing $g$ completely.
 
 {\bf Local filters~\cite{SS06}:} A {\em local filter} for property ${\cal P}$
-is an algorithm $A$ satisfying the following properties. The filter 
+is an algorithm $A$ satisfying the following conditions. The filter 
 has \emph{oracle access} to function $f:D \mapsto R$, meaning that it can 
 access $f(x)$ for any $x \in D$. Each such access is called a \emph{lookup}.
 The filter takes
@@ -184,7 +184,7 @@ The filter is allowed to store previous outputs to ensure consistency.
 Saks and Seshadhri~\cite{SS06} defined local filters to address two concerns with this model.
 First, the storage of all previous queries and answers is a massive space overhead. Second,
 different runs of the filter construct different $g$'s (because the filter is randomized).
-So we cannot instantiate multiple copies of filter to handle queries independently and consistently.
+So we cannot instantiate multiple copies of the filter to handle queries independently and consistently.
 
 Independent of this line of work, Brakerski defined \emph{local restorers}~\cite{Br08}, which are basically
 equivalent to filters with an appropriate setting of Conditions~\ref{prop:1} and~\ref{prop:2}.
@@ -205,7 +205,7 @@ for distance approximation.
 A special case of local reconstruction that has received extensive attention is decoding of error correcting codes. 
 Here, $f$ is some string, and $\cP$ is the set of all valid codewords. 
 In local decoding there is either \emph{one} correct output, or 
-sparse list of possible correct outputs. For general properties,
+a sparse list of possible correct outputs. For general properties,
 there may be many (possibly infinitely many) ways
 to construct a valid reconstruction $g$. This creates challenges
 for designing filters. Once the random seed is fixed, all query answers
@@ -222,7 +222,7 @@ over a variety of domains.
 {\bf Monotonicity:} The most studied property for local reconstruction
 is monotonicity~\cite{ACCL2,SS06,BhGr+12,AwJh+12}. Consider $f:[n]^d \mapsto \RR$,
 where $d,n$ are positive integers are $[n] = \{1,2,\ldots,n\}$. The domain
-is equipped with the natural coordinate-wise partial ordering. Namely, $x \prec y$
+is equipped with the natural coordinate-wise partial order. Namely, $x \prec y$
 if $x \neq y$ and all coordinates of $x$ are less than or equal those of $y$. A function $f$
 is monotone if: $\forall x \prec y$, $f(x) \leq f(y)$. When $d=1$,
 monotone functions are exactly sorted arrays.
@@ -239,15 +239,15 @@ Recently, Lipschitz continuity was studied from a property testing perspective b
 Most relevant to this essay, they gave an application of local Lipschitz filters
 for differential privacy. The guarantees on their filter are analogous to monotonicity
 (with a weaker form of Property~\ref{prop:2}). Awasthi, Jha, Molinaro, and Raskhodnikova~\cite{AwJh+12}
-give matching lower bounds for these reconstruction problems.
+gave matching lower bounds for these reconstruction problems.
 %
 %Again, matching upper and lower bounds
 %are known~\cite{JhRa13,AwJh+12}.
 
 {\bf Dense graph properties:} Dense graphs are commonly studied in property testing, where
 the input is given as a binary adjacency matrix. Brakerski's work on local restorers provides
-filters for bipartiteness and existence of large cliques. Large classes are dense graphs are known
-to tolerant testable. These results have been extended to local filters
+filters for bipartiteness and existence of large cliques. Large classes of dense graphs are known
+to be tolerant testable. These results have been extended to local filters
 for hypergraph properties by Austin and Tao~\cite{AT09}. This work was developed independently
 of all the previous work on filters, and their algorithms are called ``repair"
 algorithms.
@@ -268,7 +268,7 @@ setting of~\cite{ACCL2}, though their 3D result is a local filter.
 
 \OpenProb
 
-For any property tester, one can always ask if the associated property has a local filter.
+For any property tester, one can ask if the associated property has a local filter.
 Given the breadth of this area, we cannot hope to give a good summary of open problems. Nonetheless,
 we make a few suggestions.
 
